@@ -1,0 +1,271 @@
+/* File: client/src/App.css */
+/* =========================================
+   ANIMATED PNG FLAKES
+   - Uses 3 layered PNGs
+========================================= */
+.snow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  z-index: 1000; /* Bring above content */
+  pointer-events: none; /* Don’t block clicks */
+
+  background: none;
+  background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/191814/flake1.png"),
+    url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/191814/flake2.png"),
+    url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/191814/flake3.png");
+  background-repeat: repeat;
+  background-size: 600px 600px;
+
+  /* Single standard animation, no vendor prefixes needed now */
+  animation: snow 10s linear infinite;
+}
+
+/* =========================================
+   KEYFRAMES – shared by both layers
+   - Moves multiple background layers
+     at different speeds/directions
+========================================= */
+@keyframes snow {
+  0% {
+    background-position: 0px 0px, 0px 0px, 0px 0px;
+  }
+  50% {
+    background-position: 500px 500px, 100px 200px, -100px 150px;
+  }
+  100% {
+    background-position: 500px 1000px, 200px 400px, -100px 300px;
+  }
+}
+
+
+
+/* --- FILE: client/src/App.css --- */
+
+/* 1. Style cho Giphy ở giữa hộp nội dung */
+.main-gif {
+  display: block;         /* Để có thể căn giữa bằng margin */
+  margin: 0 auto 20px auto; /* Trên 0, Phải auto, Dưới 20px, Trái auto -> Căn giữa */
+  max-width: 250px;       /* Giới hạn chiều rộng, không quá to */
+  height: auto;
+  border-radius: 15px;    /* Bo tròn góc ảnh cho mềm mại */
+}
+
+/* 2. Style CHUNG cho 2 cây thông ở góc */
+.corner-tree {
+  position: fixed;
+  bottom: 0;
+  width: 300px;
+  height: auto;
+  z-index: 999;
+  pointer-events: none;
+  
+  /* --- BẠN HÃY XÓA DÒNG NÀY ĐI --- */
+  /* filter: drop-shadow(0 0 15px rgba(255, 223, 0, 0.6)); */ 
+  /* ------------------------------- */
+
+  transition: all 0.3s ease;
+}
+
+/* Vị trí cụ thể cây bên trái */
+.tree-left {
+  filter: brightness(1.1) contrast(1.4);
+  left: -30px; /* Thụt vào lề trái một chút cho tự nhiên */
+}
+
+/* Vị trí cụ thể cây bên phải */
+.tree-right {
+  filter: brightness(1.1) contrast(1.4);
+  right: -30px; /* Thụt vào lề phải */
+  transform: scaleX(-1); /* MẸO: Lật ngược ảnh theo chiều ngang để tạo đối xứng */
+}
+
+/* --- Responsive cho điện thoại --- */
+/* Khi màn hình nhỏ hơn 768px (máy tính bảng/điện thoại) */
+@media (max-width: 768px) {
+  .corner-tree {
+    width: 150px; /* Thu nhỏ cây lại để không che hết màn hình */
+  }
+  .tree-left { left: -20px; }
+  .tree-right { right: -20px; }
+  
+  .main-gif {
+    max-width: 180px; /* Thu nhỏ gif ở giữa */
+  }
+}
+
+.btn-back {
+  background-color: #f1f2f6; /* Màu xám */
+  color: #2f3542;
+  font-weight: bold;
+  padding: 12px 25px;
+  font-size: 16px;
+  margin-right: 10px; /* Cách nút Tiếp theo một chút */
+}
+
+.btn-back:hover {
+  background-color: #dfe4ea;
+  transform: scale(1.05);
+}
+
+
+/* sử lí disable */
+button:disabled {
+  background-color: #cccccc !important; /* Màu xám */
+  color: #666666 !important;
+  cursor: not-allowed; /* Con trỏ chuột hình cấm */
+  transform: none !important; /* Không phóng to khi hover */
+  box-shadow: none !important;
+}
+
+
+
+
+
+/* --- Thay thế đoạn body cũ bằng đoạn này --- */
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  
+  background: linear-gradient(180deg, #dd6977 0%, #4b050d 100%);
+
+  color: rgb(54, 54, 54); /* Chữ màu trắng để nổi trên nền đỏ */
+  font-family: 'Nunito', sans-serif; /* Hoặc font chữ bạn đang dùng */
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-x: hidden; /* Ẩn thanh cuộn ngang */
+}
+.container {
+  max-width: 1000px; /* Mở rộng page */
+  margin: 20px auto;
+  padding: 20px;
+  text-align: center;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background-color: #f3beed;
+  border-radius: 30px; /* Bo tròn nhiều hơn */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 5px solid #f884be; /* Pink Border */
+}
+
+h1 {
+  color: #ba0064; /* Deep Pink */
+  font-size: 2em;
+}
+
+/* --- Button Styles --- */
+button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 25px; /* Bo tròn nút bấm */
+  cursor: pointer;
+  font-size: 16px;
+  margin: 5px;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+.btn-yes {
+  background-color: #ff69b4; /* Hot Pink */
+  color: white;
+  font-weight: bold;
+  padding: 12px 25px;
+  font-size: 18px;
+}
+
+/* --- Grid for choices --- */
+/* --- Sửa lại phần hiển thị lưới (Grid) --- */
+.grid {
+  display: grid;
+  /* repeat(2, 1fr) nghĩa là chia làm 2 cột bằng nhau */
+  grid-template-columns: repeat(4, 1fr); 
+  gap: 15px; /* Khoảng cách giữa các ô */
+  margin: 20px 0;
+}
+
+/* Chỉnh lại item một chút cho cân đối với lưới 2 cột */
+.item {
+  color: #050b16;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 15px; /* Tăng khoảng đệm chút cho thoáng */
+  border: 2px solid #ffe6e6; /* Viền nhạt mặc định */
+  border-radius: 15px;
+  background: rgb(251, 221, 246);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3); /* Bóng màu hồng khi hover */
+  border-color: #ffb7b2;
+}
+
+.item.active {
+  border-color: #ff4757; /* Viền đỏ đậm khi chọn */
+  background-color: #fff0f3; /* Nền hồng nhạt */
+  box-shadow: 0 0 10px rgba(255, 71, 87, 0.4);
+}
+
+/* Ảnh món ăn */
+.item-image {
+  width: 80px;  /* Thu nhỏ ảnh lại xíu cho vừa 2 cột */
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 10px;
+  border: 3px solid white;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* --- Công cụ thêm món --- */
+.custom-add {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+  gap: 10px;
+}
+
+.custom-input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 16px;
+  font-size: 16px;
+  width: 250px;
+  background-color: #fff0fd;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.custom-button {
+  background-color: #ff69b4; /* Hot Pink */
+  color: white;
+}
+
+/* --- Trang xem lại --- */
+.review-section {
+  text-align: left;
+  margin: 20px auto;
+  max-width: 400px;
+  background-color: #fafafa;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+.review-section p {
+  margin: 10px 0;
+  font-size: 1.1em;
+}

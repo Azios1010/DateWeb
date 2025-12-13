@@ -1,0 +1,265 @@
+// File: client/src/App.jsx
+import { useState } from 'react';
+import axios from 'axios';
+import './App.css';
+
+import cayThongNoel from './assets/Tree.png';
+
+function App() {
+  const [step, setStep] = useState(1);
+  const [date, setDate] = useState('');
+  const [selectedFoods, setSelectedFoods] = useState([]);
+  const [selectedSnacks, setSelectedSnacks] = useState([]);
+  const [selectedPlaces, setSelectedPlaces] = useState([]);
+  const [customFood, setCustomFood] = useState('');
+  const [customSnack, setCustomSnack] = useState('');
+  const [customPlace, setCustomPlace] = useState('');
+
+  // Dữ liệu
+  const foods = [
+    { name: 'Fine Dining', image: 'https://lasinfoniavietnam.com/wp-content/uploads/2025/04/Fine-dining-4.jpg' },
+    { name: 'Jollibee', image: 'https://upload.urbox.vn/strapi/Jollibee_003_b6c3642178.jpg' },
+    { name: 'Sushi', image: 'https://lavenderstudio.com.vn/wp-content/uploads/2017/03/chup-san-pham.jpg' },
+    { name: 'Cơm Tấm', image: 'https://sakos.vn/wp-content/uploads/2024/10/bia-4.jpg' },
+    { name: 'Mỳ Cay', image: 'https://cdn.tgdd.vn/Files/2019/09/24/1201263/2-cach-nau-mi-cay-hai-san-chuan-cong-thuc-han-quoc-202112301425006195.jpg'},
+    {name: 'Dookki', image: 'https://latravel.com.vn/wp-content/uploads/2025/01/3-60.png'},
+    {name: 'Stake', image: 'https://vegconomist.com/wp-content/uploads/sites/3/Ohayo-Valley.jpg'},
+    {name: 'Pizza', image: 'https://pizzahut.vn/_next/image?url=https%3A%2F%2Fcdn.pizzahut.vn%2Fimages%2FWeb_V3%2FProducts_MenuTool%2FPesto%20H%E1%BA%A3i%20S%E1%BA%A3n._20250317172201GL5.webp&w=1170&q=75'}
+  ];
+
+  const snacks = [
+    { name: 'Trà Sữa', image: 'https://file.hstatic.net/1000135323/file/tra_sua_ngon_0e87236e4d7442fb826c502798ec6f7e_1024x1024.jpg' },
+    { name: 'Matcha Latte', image: 'https://lypham.vn/wp-content/uploads/2024/10/cach-pha-matcha-latte-nong.jpg'},
+    { name: 'Kem', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Ice_cream_with_whipped_cream%2C_chocolate_syrup%2C_and_a_wafer_%28cropped%29.jpg/250px-Ice_cream_with_whipped_cream%2C_chocolate_syrup%2C_and_a_wafer_%28cropped%29.jpg' },
+    { name: 'Croissant', image: 'https://i.ex-cdn.com/vntravellive.com/files/maidp/2024/03/15/1857-cach-thuong-thuc-banh-sung-bo-croissant-cua-nguoi-phap-net-tinh-te-trong-van-hoa-am-thuc-171807.jpg'},
+    { name: 'Pastry', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTJrpFR3x--_DIY1u98WRrJWRZqvxvlUuHfw&s'},
+    { name: 'Bánh Tráng', image: 'https://i-giadinh.vnecdn.net/2023/08/05/mon-7-1691221823-6409-1691221866.jpg'},
+    { name: 'Cafe', image: 'https://premier-village-danang.com/wp-content/uploads/sites/48/2025/06/La%E2%80%99s-Cafe.jpg' },
+    { name: 'Kẹo Bông Gòn', image: 'https://vannghedanang.org.vn/app/upload/post/2019-09-06/20190906083615_keo_bong_gon.jpg'}
+  ];
+
+  const places = [
+    { name: 'Xem Phim', image: 'https://media.timeout.com/images/105819546/image.jpg' },
+    { name: 'Công Viên', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Halleyparknovember_b.jpg/1200px-Halleyparknovember_b.jpg' },
+    { name: 'Bowling', image: 'https://torq03.com/wp-content/uploads/2024/11/PowerClip-Rectangle-2.webp' },
+    { name: 'Dạo Phố', image: 'https://media.istockphoto.com/id/1435326326/photo/young-couple-walking-through-the-city-in-stockholm.jpg?s=612x612&w=0&k=20&c=GlvWlTo8BWDSxJG9ZRx8DPqiSguSFoNEHu6Zc4pE4b8=' },
+    { name: 'Bi A', image: 'https://thegioibida.net/wp-content/uploads/2023/01/luat-choi-bida-lo.jpg'},
+    { name: 'Thủy Cung', image: 'https://asset.japan.travel/image/upload/v1648108505/okinawa/H_00376_001.jpg'},
+    { name: 'Bảo Tàng', image: 'https://nld.mediacdn.vn/291774122806476800/2023/5/11/3433181592007833794482663525031341058830058n-16837797531331415615886.jpg'},
+    { name: 'Láo Loạn Hồ Gươm', image: 'https://nld.mediacdn.vn/thumb_w/640/291774122806476800/2025/8/10/33-1754797751999434454712.jpg'},
+    { name: 'Ôn Thi cùng SV FTU', image: 'https://cdn2.fptshop.com.vn/unsafe/1920x0/filters:format(webp):quality(75)/hoc_phi_dai_hoc_ngoai_thuong_2025_39bbf2e01a.jpg'},
+    { name: 'Giải Tích cùng SV HUST', image: 'https://i.pinimg.com/736x/2d/53/27/2d53279fa89505884625227905b490a3.jpg'},
+    { name: 'Chill cùng SV NEU', image: 'https://media-efl.neu.edu.vn/uploads/2025/10/04/0c94748c-5c13-4671-ae06-fb7646e7c1a9-1759545233.jpg'},
+    { name: 'Đi dạy cùng SV HNUE', image: 'https://vcdn1-vnexpress.vnecdn.net/2024/01/27/HNUE-jpeg-2094-1706327030.jpg?w=680&h=0&q=100&dpr=2&fit=crop&s=54vZnPKYcJpDZI-hGK9dqw'}
+  ];
+
+  // Hàm chọn chung
+  const toggleItem = (item, list, setList) => {
+    if (list.includes(item)) {
+      setList(list.filter(i => i !== item));
+    } else {
+      setList([...list, item]);
+    }
+  };
+
+  // Hàm thêm món tùy chọn
+  const handleAddCustomItem = (customItem, setCustomItem, selectedItems, setSelectedItems) => {
+    if (customItem.trim() && !selectedItems.includes(customItem.trim())) {
+      setSelectedItems([...selectedItems, customItem.trim()]);
+    }
+    setCustomItem('');
+  };
+
+  // Gửi Server
+  const handleFinish = async () => {
+    try {
+      await axios.post('http://localhost:3000/api/submit', {
+        response: "Đồng ý",
+        date,
+        foods: selectedFoods,
+        snacks: selectedSnacks,
+        places: selectedPlaces
+      });
+      setStep(7);
+    } catch (err) {
+      alert("Lỗi: Chưa bật Server Node.js!");
+    }
+  };
+
+  return (
+    <>
+      <div className="snow"></div>
+
+      <img 
+        src={cayThongNoel} 
+        className="corner-tree tree-left" 
+        alt="Tree Left"
+      />
+      {/* Cây bên phải */}
+      <img 
+        src={cayThongNoel}
+        className="corner-tree tree-right" 
+        alt="Tree Right"
+      />
+
+      <div className="container">
+        <img 
+            src="https://media2.giphy.com/media/3o6wrbKc0dpygGk9fW/giphy.gif" 
+            className="main-gif" 
+            alt="Cute Gif" 
+        />
+      {/* Step 1: Lời mời */}
+      {step === 1 && (
+        <>
+          <div className="fade-in">
+            <h1>Công chúa đã sẵn sàng cho một ngày hoàn hảo chưa nè !</h1>
+            <button className="btn-yes" onClick={() => setStep(2)}>Rồi nha</button>
+            <button onClick={() => alert("Bao giờ em bán được 1 tỷ gói mè thì mới được từ chối anh <3")}>K Ó</button>
+          </div>
+        </>
+      )}
+
+      {/* Step 2: Chọn thời gian */}
+      {step === 2 && (
+        <div className="fade-in">
+          <h1>Công chúa muốn đi lúc mấy nào vậy!!!</h1>
+          <input
+            type="datetime-local"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            style={{ padding: '30px', margin: '50px', fontSize: '20px', borderRadius: '500px' }}
+          />
+          <br />
+          {/* Nút Quay lại */}
+          <button className="btn-back" onClick={() => setStep(1)}>Quay lại</button>
+          <button className="btn-yes" onClick={() => setStep(3)}
+            disabled={!date}>
+            Tiếp theo</button>
+        </div>
+      )}
+
+      {/* Step 3: Chọn món ăn */}
+      {step === 3 && (
+        <div className="fade-in">
+          <h1>Mời công chúa chọn món</h1>
+          <div className="custom-add">
+            <input
+              type="text"
+              value={customFood}
+              onChange={(e) => setCustomFood(e.target.value)}
+              placeholder="Thêm món khác..."
+              className="custom-input"
+            />
+            <button onClick={() => handleAddCustomItem(customFood, setCustomFood, selectedFoods, setSelectedFoods)} className="custom-button">Thêm</button>
+          </div>
+          <div className="grid">
+            {foods.map(m => (
+              <div key={m.name} 
+                   className={`item ${selectedFoods.includes(m.name) ? 'active' : ''}`}
+                   onClick={() => toggleItem(m.name, selectedFoods, setSelectedFoods)}>
+                <img src={m.image} alt={m.name} className="item-image" />
+                <div>{m.name}</div>
+              </div>
+            ))}
+          </div>
+          <p><strong>Đã chọn:</strong> {selectedFoods.join(', ') || 'Chưa có gì'}</p>
+          
+          {/* Nút Quay lại & Tiếp theo */}
+          <button className="btn-back" onClick={() => setStep(2)}>Quay lại</button>
+          <button className="btn-yes" onClick={() => setStep(4)}
+            disabled={selectedFoods.length === 0}>
+            Tiếp theo</button>
+        </div>
+      )}
+
+      {/* Step 4: Chọn đồ ăn vặt */}
+      {step === 4 && (
+        <div className="fade-in">
+          <h1>Một chút nhẹ nhàng...</h1>
+          <div className="custom-add">
+            <input
+              type="text"
+              value={customSnack}
+              onChange={(e) => setCustomSnack(e.target.value)}
+              placeholder="Thêm món khác..."
+              className="custom-input"
+            />
+            <button onClick={() => handleAddCustomItem(customSnack, setCustomSnack, selectedSnacks, setSelectedSnacks)} className="custom-button">Thêm</button>
+          </div>
+          <div className="grid">
+            {snacks.map(m => (
+              <div key={m.name} 
+                   className={`item ${selectedSnacks.includes(m.name) ? 'active' : ''}`}
+                   onClick={() => toggleItem(m.name, selectedSnacks, setSelectedSnacks)}>
+                <img src={m.image} alt={m.name} className="item-image" />
+                <div>{m.name}</div>
+              </div>
+            ))}
+          </div>
+          <p><strong>Đã chọn:</strong> {selectedSnacks.join(', ') || 'Chưa có gì'}</p>
+          
+          {/* Nút Quay lại & Tiếp theo */}
+          <button className="btn-back" onClick={() => setStep(3)}>Quay lại</button>
+          <button className="btn-yes" onClick={() => setStep(5)}
+            disabled={selectedSnacks.length === 0}>
+            Tiếp theo</button>
+        </div>
+      )}
+
+      {/* Step 5: Chọn địa điểm */}
+      {step === 5 && (
+        <div className="fade-in">
+          <h1>Công chúa muốn đi tiếp đâu ạ...</h1>
+          <div className="custom-add">
+            <input
+              type="text"
+              value={customPlace}
+              onChange={(e) => setCustomPlace(e.target.value)}
+              placeholder="Thêm chỗ khác..."
+              className="custom-input"
+            />
+            <button onClick={() => handleAddCustomItem(customPlace, setCustomPlace, selectedPlaces, setSelectedPlaces)} className="custom-button">Thêm</button>
+          </div>
+          <div className="grid">
+            {places.map(m => (
+              <div key={m.name} 
+                   className={`item ${selectedPlaces.includes(m.name) ? 'active' : ''}`}
+                   onClick={() => toggleItem(m.name, selectedPlaces, setSelectedPlaces)}>
+                <img src={m.image} alt={m.name} className="item-image" />
+                <div>{m.name}</div>
+              </div>
+            ))}
+          </div>
+          <p><strong>Đã chọn:</strong> {selectedPlaces.join(', ') || 'Chưa có gì'}</p>
+          
+          {/* Nút Quay lại & Tiếp theo */}
+          <button className="btn-back" onClick={() => setStep(4)}>Quay lại</button>
+          <button className="btn-yes" onClick={() => setStep(6)}
+            disabled={selectedPlaces.length === 0}>
+            Tiếp theo</button>
+        </div>
+      )}
+
+      {/* Step 6: Xem lại */}
+      {step === 6 && (
+        <div className="fade-in">
+          <h1>Đơn hàng của công chúa anh sẽ có mặt trước 15 phút nha</h1>
+          <div className="review-section">
+            <p><strong>Thời gian:</strong> {date ? new Date(date).toLocaleString('vi-VN') : 'Chưa chọn'}</p>
+            <p><strong>Món chính:</strong> {selectedFoods.join(', ') || 'Không ăn'}</p>
+            <p><strong>Điểm tâm:</strong> {selectedSnacks.join(', ') || 'Không ăn'}</p>
+            <p><strong>Giải trí:</strong> {selectedPlaces.join(', ') || 'Ở nhà'}</p>
+          </div>
+          
+          {/* Nút Quay lại & Chốt đơn */}
+          <button className="btn-back" onClick={() => setStep(5)}>Quay lại</button>
+          <button className="btn-yes" onClick={handleFinish}>Chốt đơn</button>
+        </div>
+      )}
+
+      {step === 7 && <h1>Yêu em! Cảm ơn vì da den 🥰</h1>}
+      </div>
+    </>
+  );
+}
+export default App;
