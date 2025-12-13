@@ -73,7 +73,7 @@ function App() {
   // Gửi Server
   const handleFinish = async () => {
     try {
-      await axios.post('https://date-require-website.onrender.com', {
+      await axios.post('https://date-require-website.onrender.com/api/submit', {
         response: "Đồng ý",
         date,
         foods: selectedFoods,
