@@ -23,7 +23,7 @@ function App() {
     { name: 'Cơm Tấm', image: 'https://sakos.vn/wp-content/uploads/2024/10/bia-4.jpg' },
     { name: 'Mỳ Cay', image: 'https://cdn.tgdd.vn/Files/2019/09/24/1201263/2-cach-nau-mi-cay-hai-san-chuan-cong-thuc-han-quoc-202112301425006195.jpg'},
     {name: 'Dookki', image: 'https://latravel.com.vn/wp-content/uploads/2025/01/3-60.png'},
-    {name: 'Stake', image: 'https://vegconomist.com/wp-content/uploads/sites/3/Ohayo-Valley.jpg'},
+    {name: 'Steek', image: 'https://vegconomist.com/wp-content/uploads/sites/3/Ohayo-Valley.jpg'},
     {name: 'Pizza', image: 'https://pizzahut.vn/_next/image?url=https%3A%2F%2Fcdn.pizzahut.vn%2Fimages%2FWeb_V3%2FProducts_MenuTool%2FPesto%20H%E1%BA%A3i%20S%E1%BA%A3n._20250317172201GL5.webp&w=1170&q=75'}
   ];
 
@@ -33,9 +33,9 @@ function App() {
     { name: 'Kem', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Ice_cream_with_whipped_cream%2C_chocolate_syrup%2C_and_a_wafer_%28cropped%29.jpg/250px-Ice_cream_with_whipped_cream%2C_chocolate_syrup%2C_and_a_wafer_%28cropped%29.jpg' },
     { name: 'Croissant', image: 'https://i.ex-cdn.com/vntravellive.com/files/maidp/2024/03/15/1857-cach-thuong-thuc-banh-sung-bo-croissant-cua-nguoi-phap-net-tinh-te-trong-van-hoa-am-thuc-171807.jpg'},
     { name: 'Pastry', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTJrpFR3x--_DIY1u98WRrJWRZqvxvlUuHfw&s'},
-    { name: 'Bánh Tráng', image: 'https://i-giadinh.vnecdn.net/2023/08/05/mon-7-1691221823-6409-1691221866.jpg'},
+    { name: 'Affogato', image: 'https://simexcodl.com.vn/wp-content/uploads/2024/07/affogato-la-gi-3.jpg'},
     { name: 'Cafe', image: 'https://premier-village-danang.com/wp-content/uploads/sites/48/2025/06/La%E2%80%99s-Cafe.jpg' },
-    { name: 'Kẹo Bông Gòn', image: 'https://vannghedanang.org.vn/app/upload/post/2019-09-06/20190906083615_keo_bong_gon.jpg'}
+    { name: 'Panna Cotta', image: 'https://www.recipetineats.com/tachyon/2025/09/Panna-cotta_8-close-up.jpg'}
   ];
 
   const places = [
@@ -122,7 +122,7 @@ function App() {
       {/* Step 2: Chọn thời gian */}
       {step === 2 && (
         <div className="fade-in">
-          <h1>Công chúa muốn đi lúc mấy nào vậy!!!</h1>
+          <h1>Công chúa muốn đi lúc nào vậy!!!</h1>
           <input
             type="datetime-local"
             value={date}
@@ -243,7 +243,7 @@ function App() {
       {/* Step 6: Xem lại */}
       {step === 6 && (
         <div className="fade-in">
-          <h1>Đơn hàng của công chúa anh sẽ có mặt trước 15 phút nha</h1>
+          <h1>Đơn hàng của công chúa, anh sẽ có mặt trước 15 phút nha</h1>
           <div className="review-section">
             <p><strong>Thời gian:</strong> {date ? new Date(date).toLocaleString('vi-VN') : 'Chưa chọn'}</p>
             <p><strong>Món chính:</strong> {selectedFoods.join(', ') || 'Không ăn'}</p>
