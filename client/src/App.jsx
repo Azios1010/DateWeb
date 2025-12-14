@@ -1,9 +1,11 @@
 // File: client/src/App.jsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
 
-import cayThongNoel from './assets/Tree.png';
+import cayThongNoel from './assets/Tree.png'; 
+import musicFile from './assets/MerryChristmasSong.mp3';
+import { use } from 'react';
 
 function App() {
   const [step, setStep] = useState(1);
@@ -14,6 +16,35 @@ function App() {
   const [customFood, setCustomFood] = useState('');
   const [customSnack, setCustomSnack] = useState('');
   const [customPlace, setCustomPlace] = useState('');
+
+  const [audio] = useState(new Audio(musicFile));
+
+  useEffect(() => {
+    audio.loop = true;
+    audio.volume = 0.5;
+    
+    const audioPromise = audio.play();
+    if (audioPromise !== undefined) {
+      audioPromise.then(_ => {
+        // Tự động phát thành công
+      }).catch(err => {
+        // Tự động phát thất bại
+        console.log("⚠️ Tự động phát nhạc bị chặn:", err);
+      }); 
+
+    return () => {  
+      audio.pause();
+    };
+    } 
+  }, []);
+
+
+  const handleStart = () => {
+    setStep(2);
+    if(audio.paused) {
+      audio.play();
+    }
+  };
 
   // Dữ liệu
   const foods = [
@@ -113,7 +144,7 @@ function App() {
         <>
           <div className="fade-in">
             <h1>Công chúa đã sẵn sàng cho một ngày hoàn hảo chưa nè !</h1>
-            <button className="btn-yes" onClick={() => setStep(2)}>Rồi nha</button>
+            <button className="btn-yes" onClick={handleStart}>Rồi nha</button>
             <button onClick={() => alert("Bao giờ em bán được 1 tỷ gói mè thì mới được từ chối anh <3")}>K Ó</button>
           </div>
         </>
