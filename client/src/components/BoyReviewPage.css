@@ -1,0 +1,97 @@
+/* --- BOY REVIEW PAGE (Style Hóa đơn) --- */
+
+.boy-review {
+  display: flex;
+  justify-content: center;
+  padding: 20px 10px;
+  animation: slideIn 0.5s ease;
+}
+
+/* Tờ hóa đơn */
+.bill-paper {
+  background: #fff;
+  width: 100%;
+  max-width: 400px; /* Độ rộng giống tờ giấy A4 nhỏ */
+  padding: 30px;
+  border-radius: 5px; /* Bo góc nhẹ */
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15); /* Đổ bóng sâu */
+  position: relative;
+  text-align: left; /* Canh trái giống hóa đơn thật */
+  color: #333;
+}
+
+/* Trang trí phần đục lỗ hoặc răng cưa ở dưới đáy (Optional) */
+.bill-paper::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 100%;
+  height: 10px;
+  background: 
+    linear-gradient(45deg, transparent 33.333%, #ffffff 33.333%, #ffffff 66.667%, transparent 66.667%), 
+    linear-gradient(-45deg, transparent 33.333%, #ffffff 33.333%, #ffffff 66.667%, transparent 66.667%);
+  background-size: 20px 20px; /* Tạo hình răng cưa */
+}
+
+.bill-paper h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #ff4b4b;
+  border-bottom: 2px dashed #ddd; /* Đường kẻ ngang */
+  padding-bottom: 15px;
+  font-family: 'Courier New', Courier, monospace; /* Font giống máy in */
+  font-weight: bold;
+}
+
+/* Các dòng thông tin */
+.bill-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  font-size: 16px;
+}
+
+.bill-section {
+  margin-top: 20px;
+}
+
+.bill-section h3 {
+  font-size: 16px;
+  color: #666;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.bill-section ul {
+  list-style: none; /* Bỏ dấu chấm đầu dòng */
+  padding: 0;
+}
+
+.bill-section li {
+  padding: 5px 0;
+  border-bottom: 1px dashed #eee; /* Kẻ mờ giữa các món */
+  font-weight: 500;
+}
+
+/* Nút Chốt đơn */
+.btn-accept {
+  width: 100%;
+  margin-top: 30px;
+  padding: 15px;
+  background: #4caf50; /* Màu xanh lá đồng ý */
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+  transition: transform 0.2s;
+}
+
+.btn-accept:hover {
+  background: #43a047;
+  transform: translateY(-2px);
+}

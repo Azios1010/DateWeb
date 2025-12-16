@@ -1,296 +1,208 @@
-// File: client/src/App.jsx
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
 
-import cayThongNoel from './assets/Tree.png'; 
-import musicFile from './assets/MerryChristmasSong.mp3';
-import { use } from 'react';
+import cayThongNoel from './assets/Tree.png';
+// Import các component con
+import LandingPage from './components/LandingPage';
+import GirlSelectionPage from './components/GirlSelectionPage';
+import BoyReviewPage from './components/BoyReviewPage';
+import SuccessPage from './components/SuccessPage';
+import CoupleHeader from './components/CoupleHeader';
+
+// Link API (nhớ đổi thành link Render của bạn nếu deploy)
+//const API_URL = 'https://date-require-website.onrender.com/api/couple';
+
+const API_URL = 'http://localhost:3000/api/couple';
 
 function App() {
-  const [step, setStep] = useState(1);
-  const [date, setDate] = useState('');
-  const [selectedFoods, setSelectedFoods] = useState([]);
-  const [selectedSnacks, setSelectedSnacks] = useState([]);
-  const [selectedPlaces, setSelectedPlaces] = useState([]);
-  const [customFood, setCustomFood] = useState('');
-  const [customSnack, setCustomSnack] = useState('');
-  const [customPlace, setCustomPlace] = useState('');
+  const [coupleId, setCoupleId] = useState(null);
+  const [coupleData, setCoupleData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const [audio] = useState(new Audio(musicFile));
-
+  // --- LOGIC 1: KHỞI TẠO & CHECK ID ---
   useEffect(() => {
-    audio.loop = true;
-    audio.volume = 0.5;
+    // 1. Tìm ID trên URL (ưu tiên)
+    const params = new URLSearchParams(window.location.search);
+    const urlId = params.get('id');
     
-    const audioPromise = audio.play();
-    if (audioPromise !== undefined) {
-      audioPromise.then(_ => {
-        // Tự động phát thành công
-      }).catch(err => {
-        // Tự động phát thất bại
-        console.log("⚠️ Tự động phát nhạc bị chặn:", err);
-      }); 
+    // 2. Tìm ID trong bộ nhớ máy
+    const localId = localStorage.getItem('my_couple_id');
+    
+    const finalId = urlId || localId;
 
-    return () => {  
-      audio.pause();
-    };
-    } 
+    if (finalId) {
+      setCoupleId(finalId);
+      // Nếu ID đến từ URL (do bạn gái click), lưu lại vào máy luôn
+      if (urlId) localStorage.setItem('my_couple_id', urlId);
+      
+      fetchData(finalId);
+
+      // Tự động cập nhật 3 giây/lần (Polling)
+      const interval = setInterval(() => fetchData(finalId), 3000);
+      return () => clearInterval(interval);
+    } else {
+      setLoading(false);
+    }
   }, []);
 
-
-  const handleStart = () => {
-    setStep(2);
-    if(audio.paused) {
-      audio.play();
+  useEffect(() => {
+    if (!coupleId) {
+      return;
     }
-  };
+    const interval = setInterval(() => fetchData(coupleId), 2000);
+    return () => clearInterval(interval);
+  }, [coupleId]);
 
-  // Dữ liệu
-  const foods = [
-    { name: 'Fine Dining', image: 'https://lasinfoniavietnam.com/wp-content/uploads/2025/04/Fine-dining-4.jpg' },
-    { name: 'Jollibee', image: 'https://upload.urbox.vn/strapi/Jollibee_003_b6c3642178.jpg' },
-    { name: 'Sushi', image: 'https://lavenderstudio.com.vn/wp-content/uploads/2017/03/chup-san-pham.jpg' },
-    { name: 'Cơm Tấm', image: 'https://sakos.vn/wp-content/uploads/2024/10/bia-4.jpg' },
-    { name: 'Mỳ Cay', image: 'https://cdn.tgdd.vn/Files/2019/09/24/1201263/2-cach-nau-mi-cay-hai-san-chuan-cong-thuc-han-quoc-202112301425006195.jpg'},
-    {name: 'Dookki', image: 'https://latravel.com.vn/wp-content/uploads/2025/01/3-60.png'},
-    {name: 'Steek', image: 'https://vegconomist.com/wp-content/uploads/sites/3/Ohayo-Valley.jpg'},
-    {name: 'Pizza', image: 'https://pizzahut.vn/_next/image?url=https%3A%2F%2Fcdn.pizzahut.vn%2Fimages%2FWeb_V3%2FProducts_MenuTool%2FPesto%20H%E1%BA%A3i%20S%E1%BA%A3n._20250317172201GL5.webp&w=1170&q=75'}
-  ];
-
-  const snacks = [
-    { name: 'Trà Sữa', image: 'https://file.hstatic.net/1000135323/file/tra_sua_ngon_0e87236e4d7442fb826c502798ec6f7e_1024x1024.jpg' },
-    { name: 'Matcha Latte', image: 'https://lypham.vn/wp-content/uploads/2024/10/cach-pha-matcha-latte-nong.jpg'},
-    { name: 'Kem', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Ice_cream_with_whipped_cream%2C_chocolate_syrup%2C_and_a_wafer_%28cropped%29.jpg/250px-Ice_cream_with_whipped_cream%2C_chocolate_syrup%2C_and_a_wafer_%28cropped%29.jpg' },
-    { name: 'Croissant', image: 'https://i.ex-cdn.com/vntravellive.com/files/maidp/2024/03/15/1857-cach-thuong-thuc-banh-sung-bo-croissant-cua-nguoi-phap-net-tinh-te-trong-van-hoa-am-thuc-171807.jpg'},
-    { name: 'Pastry', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTJrpFR3x--_DIY1u98WRrJWRZqvxvlUuHfw&s'},
-    { name: 'Affogato', image: 'https://simexcodl.com.vn/wp-content/uploads/2024/07/affogato-la-gi-3.jpg'},
-    { name: 'Cafe', image: 'https://premier-village-danang.com/wp-content/uploads/sites/48/2025/06/La%E2%80%99s-Cafe.jpg' },
-    { name: 'Panna Cotta', image: 'https://www.recipetineats.com/tachyon/2025/09/Panna-cotta_8-close-up.jpg'}
-  ];
-
-  const places = [
-    { name: 'Xem Phim', image: 'https://media.timeout.com/images/105819546/image.jpg' },
-    { name: 'Công Viên', image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Halleyparknovember_b.jpg/1200px-Halleyparknovember_b.jpg' },
-    { name: 'Bowling', image: 'https://torq03.com/wp-content/uploads/2024/11/PowerClip-Rectangle-2.webp' },
-    { name: 'Dạo Phố', image: 'https://media.istockphoto.com/id/1435326326/photo/young-couple-walking-through-the-city-in-stockholm.jpg?s=612x612&w=0&k=20&c=GlvWlTo8BWDSxJG9ZRx8DPqiSguSFoNEHu6Zc4pE4b8=' },
-    { name: 'Bi A', image: 'https://thegioibida.net/wp-content/uploads/2023/01/luat-choi-bida-lo.jpg'},
-    { name: 'Thủy Cung', image: 'https://asset.japan.travel/image/upload/v1648108505/okinawa/H_00376_001.jpg'},
-    { name: 'Bảo Tàng', image: 'https://nld.mediacdn.vn/291774122806476800/2023/5/11/3433181592007833794482663525031341058830058n-16837797531331415615886.jpg'},
-    { name: 'Láo Loạn Hồ Gươm', image: 'https://nld.mediacdn.vn/thumb_w/640/291774122806476800/2025/8/10/33-1754797751999434454712.jpg'},
-    { name: 'Ôn Thi cùng SV FTU', image: 'https://cdn2.fptshop.com.vn/unsafe/1920x0/filters:format(webp):quality(75)/hoc_phi_dai_hoc_ngoai_thuong_2025_39bbf2e01a.jpg'},
-    { name: 'Giải Tích cùng SV HUST', image: 'https://i.pinimg.com/736x/2d/53/27/2d53279fa89505884625227905b490a3.jpg'},
-    { name: 'Chill cùng SV NEU', image: 'https://media-efl.neu.edu.vn/uploads/2025/10/04/0c94748c-5c13-4671-ae06-fb7646e7c1a9-1759545233.jpg'},
-    { name: 'Đi dạy cùng SV HNUE', image: 'https://vcdn1-vnexpress.vnecdn.net/2024/01/27/HNUE-jpeg-2094-1706327030.jpg?w=680&h=0&q=100&dpr=2&fit=crop&s=54vZnPKYcJpDZI-hGK9dqw'}
-  ];
-
-  // Hàm chọn chung
-  const toggleItem = (item, list, setList) => {
-    if (list.includes(item)) {
-      setList(list.filter(i => i !== item));
-    } else {
-      setList([...list, item]);
-    }
-  };
-
-  // Hàm thêm món tùy chọn
-  const handleAddCustomItem = (customItem, setCustomItem, selectedItems, setSelectedItems) => {
-    if (customItem.trim() && !selectedItems.includes(customItem.trim())) {
-      setSelectedItems([...selectedItems, customItem.trim()]);
-    }
-    setCustomItem('');
-  };
-
-  // Gửi Server
-  const handleFinish = async () => {
+  // Hàm tải dữ liệu
+  const fetchData = async (id) => {
     try {
-      await axios.post('https://date-require-website.onrender.com/api/submit', {
-        response: "Đồng ý",
-        date,
-        foods: selectedFoods,
-        snacks: selectedSnacks,
-        places: selectedPlaces
-      });
-      setStep(7);
+      const res = await axios.get(`${API_URL}/${id}`);
+      setCoupleData(prev => {
+        if (JSON.stringify(prev) !== JSON.stringify(res.data)) {
+          return res.data;
+        }
+        return prev;
+      }
+      );
     } catch (err) {
-      alert("Lỗi: Chưa bật Server Node.js!");
+      console.error("Lỗi tải data", err);
+      // Nếu lỗi (ví dụ ID sai), chỉ reset nếu đang loading lần đầu
+      if (loading) {
+         localStorage.removeItem('my_couple_id');
+         setCoupleId(null);
+      }
+    } finally {
+      setLoading(false);
     }
   };
+
+  // --- LOGIC 2: CÁC HÀNH ĐỘNG ---
+
+  // A. Bạn Nam tạo phòng
+  const handleCreateLink = async (boyName, girlName) => {
+    try {
+      if (!boyName || !girlName) return alert("Nhập đủ tên 2 người nhé!");
+      
+      const res = await axios.post(`${API_URL}/create`, { boyName, girlName });
+      const newId = res.data.linkId;
+      
+      // Quan trọng: Đánh dấu máy này là CHỦ PHÒNG (Nam)
+      localStorage.setItem('is_owner', 'true');
+      localStorage.setItem('my_couple_id', newId);
+      
+      setCoupleId(newId);
+      fetchData(newId);
+    } catch (err) {
+      alert("Lỗi tạo phòng: " + err.message);
+    }
+  };
+
+  // B. Bạn Nữ gửi món
+  const handleGirlSubmit = async (data) => {
+    await axios.post(`${API_URL}/submit`, { linkId: coupleId, ...data });
+    fetchData(coupleId);
+  };
+
+  // C. Bạn Nam chốt đơn
+  const handleBoyAccept = async () => {
+    await axios.post(`${API_URL}/accept`, { linkId: coupleId });
+    fetchData(coupleId);
+  };
+
+  // D. Nút thoát/làm lại
+  const handleReset = () => {
+    localStorage.removeItem('my_couple_id');
+    localStorage.removeItem('is_owner');
+    window.history.pushState({}, document.title, "/"); // Xóa ID trên URL
+    window.location.reload();
+  };
+
+
+  // --- LOGIC 3: HIỂN THỊ GIAO DIỆN ---
+
+  if (loading) return <div className="loading-screen">Đang kết nối trái tim...❤️</div>;
+
+  // 1. Nếu chưa có Link -> Hiện Landing Page (Cho bạn Nam nhập tên)
+  if (!coupleId) {
+    return <LandingPage onCreateLink={handleCreateLink} />;
+  }
+
+  // 2. Nếu đã có Link -> Kiểm tra dữ liệu
+  if (!coupleData) return <div className="loading-screen">Đang tải dữ liệu...</div>;
+
+  // Kiểm tra xem ai đang xem (Nam hay Nữ?)
+  const isOwner = localStorage.getItem('is_owner') === 'true';
+  
+  const showResetButton = coupleId && coupleData && (
+    isOwner &&
+    !(coupleData.status == 'sent' && isOwner)
+  );
+  // Tạo link để share: Domain hiện tại + /?id= + ID
+  const shareLink = `${window.location.origin}/?id=${coupleId}`;
 
   return (
-    <>
+    <div className="app-container">
+      {showResetButton && (
+      <button className="btn-reset" onClick={handleReset}>🔄 Reset</button>
+      )}
+      
       <div className="snow"></div>
+      <img src={cayThongNoel} className="corner-tree tree-left" alt="Tree Left"/>
+      <img src={cayThongNoel} className="corner-tree tree-right" alt="Tree Right"/>
+      
+      <CoupleHeader boy={coupleData.boyName} girl={coupleData.girlName} />
 
-      <img 
-        src={cayThongNoel} 
-        className="corner-tree tree-left" 
-        alt="Tree Left"
-      />
-      {/* Cây bên phải */}
-      <img 
-        src={cayThongNoel}
-        className="corner-tree tree-right" 
-        alt="Tree Right"
-      />
+      {/* --- TRƯỜNG HỢP 1: THÀNH CÔNG (Accepted) --- */}
+      {coupleData.status === 'accepted' && (<SuccessPage isOwner={isOwner}/>)}
 
-      <div className="container">
-        <img 
-            src="https://media2.giphy.com/media/3o6wrbKc0dpygGk9fW/giphy.gif" 
-            className="main-gif" 
-            alt="Cute Gif" 
-        />
-      {/* Step 1: Lời mời */}
-      {step === 1 && (
-        <>
-          <div className="fade-in">
-            <h1>Công chúa đã sẵn sàng cho một ngày hoàn hảo chưa nè !</h1>
-            <button className="btn-yes" onClick={handleStart}>Rồi nha</button>
-            <button onClick={() => alert("Bao giờ em bán được 1 tỷ gói mè thì mới được từ chối anh <3")}>K Ó</button>
-          </div>
-        </>
+      {/* --- TRƯỜNG HỢP 2: BẠN NỮ ĐÃ GỬI (Sent) --- */}
+      {coupleData.status === 'sent' && (
+         isOwner ? (
+            // Nam: Thấy đơn hàng -> Duyệt
+            <BoyReviewPage data={coupleData.requestData} onAccept={handleBoyAccept} />
+         ) : (
+            // Nữ: Chờ Nam duyệt
+            <div className="waiting-box fade-in">
+               <h2>Đã gửi đến chàng rồi nhé!</h2>
+               <p>Chờ anh {coupleData.boyName} chốt đơn nhé...</p>
+               <div className="loader"></div>
+            </div>
+         )
       )}
 
-      {/* Step 2: Chọn thời gian */}
-      {step === 2 && (
-        <div className="fade-in">
-          <h1>Công chúa muốn đi lúc nào vậy!!!</h1>
-          <input
-            type="datetime-local"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            style={{ padding: '30px', margin: '50px', fontSize: '20px', borderRadius: '500px' }}
-          />
-          <br />
-          {/* Nút Quay lại */}
-          <button className="btn-back" onClick={() => setStep(1)}>Quay lại</button>
-          <button className="btn-yes" onClick={() => setStep(3)}
-            disabled={!date}>
-            Tiếp theo</button>
-        </div>
-      )}
+      {/* --- TRƯỜNG HỢP 3: ĐANG CHỜ CHỌN MÓN (Waiting) --- */}
+      {coupleData.status === 'waiting' && (
+         isOwner ? (
+            // NAM (Chủ phòng): Hiện giao diện chờ & Link share
+            <div className="waiting-box fade-in">
+               <h2>Phòng đã tạo thành công!</h2>
+               <p>Hãy gửi link này cho {coupleData.girlName} để cô ấy chọn nhé!</p>
+               
+               <div className="link-box">{shareLink}</div>
+               
+               <button className="btn-copy" onClick={() => {
+                  navigator.clipboard.writeText(shareLink);
+                  alert("Đã copy link! Gửi cho nàng đi nào.");
+               }}>
+                  Copy Link Ngay
+               </button>
 
-      {/* Step 3: Chọn món ăn */}
-      {step === 3 && (
-        <div className="fade-in">
-          <h1>Mời công chúa chọn món</h1>
-          <div className="custom-add">
-            <input
-              type="text"
-              value={customFood}
-              onChange={(e) => setCustomFood(e.target.value)}
-              placeholder="Thêm món khác..."
-              className="custom-input"
+               <div className="status-divider"></div>
+               <p className="status-text">⏳ Đang chờ cô ấy chọn món...</p>
+               <p className="sub-text">(Giao diện sẽ tự động đổi khi cô ấy bấm Gửi)</p>
+               <div className="loader"></div>
+            </div>
+         ) : (
+            // NỮ (Khách): Hiện giao diện chọn món
+            <GirlSelectionPage 
+               girlName={coupleData.girlName} 
+               onFinish={handleGirlSubmit} 
             />
-            <button onClick={() => handleAddCustomItem(customFood, setCustomFood, selectedFoods, setSelectedFoods)} className="custom-button">Thêm</button>
-          </div>
-          <div className="grid">
-            {foods.map(m => (
-              <div key={m.name} 
-                   className={`item ${selectedFoods.includes(m.name) ? 'active' : ''}`}
-                   onClick={() => toggleItem(m.name, selectedFoods, setSelectedFoods)}>
-                <img src={m.image} alt={m.name} className="item-image" />
-                <div>{m.name}</div>
-              </div>
-            ))}
-          </div>
-          <p><strong>Đã chọn:</strong> {selectedFoods.join(', ') || 'Chưa có gì'}</p>
-          
-          {/* Nút Quay lại & Tiếp theo */}
-          <button className="btn-back" onClick={() => setStep(2)}>Quay lại</button>
-          <button className="btn-yes" onClick={() => setStep(4)}
-            disabled={selectedFoods.length === 0}>
-            Tiếp theo</button>
-        </div>
+         )
       )}
-
-      {/* Step 4: Chọn đồ ăn vặt */}
-      {step === 4 && (
-        <div className="fade-in">
-          <h1>Một chút nhẹ nhàng...</h1>
-          <div className="custom-add">
-            <input
-              type="text"
-              value={customSnack}
-              onChange={(e) => setCustomSnack(e.target.value)}
-              placeholder="Thêm món khác..."
-              className="custom-input"
-            />
-            <button onClick={() => handleAddCustomItem(customSnack, setCustomSnack, selectedSnacks, setSelectedSnacks)} className="custom-button">Thêm</button>
-          </div>
-          <div className="grid">
-            {snacks.map(m => (
-              <div key={m.name} 
-                   className={`item ${selectedSnacks.includes(m.name) ? 'active' : ''}`}
-                   onClick={() => toggleItem(m.name, selectedSnacks, setSelectedSnacks)}>
-                <img src={m.image} alt={m.name} className="item-image" />
-                <div>{m.name}</div>
-              </div>
-            ))}
-          </div>
-          <p><strong>Đã chọn:</strong> {selectedSnacks.join(', ') || 'Chưa có gì'}</p>
-          
-          {/* Nút Quay lại & Tiếp theo */}
-          <button className="btn-back" onClick={() => setStep(3)}>Quay lại</button>
-          <button className="btn-yes" onClick={() => setStep(5)}
-            disabled={selectedSnacks.length === 0}>
-            Tiếp theo</button>
-        </div>
-      )}
-
-      {/* Step 5: Chọn địa điểm */}
-      {step === 5 && (
-        <div className="fade-in">
-          <h1>Công chúa muốn đi tiếp đâu ạ...</h1>
-          <div className="custom-add">
-            <input
-              type="text"
-              value={customPlace}
-              onChange={(e) => setCustomPlace(e.target.value)}
-              placeholder="Thêm chỗ khác..."
-              className="custom-input"
-            />
-            <button onClick={() => handleAddCustomItem(customPlace, setCustomPlace, selectedPlaces, setSelectedPlaces)} className="custom-button">Thêm</button>
-          </div>
-          <div className="grid">
-            {places.map(m => (
-              <div key={m.name} 
-                   className={`item ${selectedPlaces.includes(m.name) ? 'active' : ''}`}
-                   onClick={() => toggleItem(m.name, selectedPlaces, setSelectedPlaces)}>
-                <img src={m.image} alt={m.name} className="item-image" />
-                <div>{m.name}</div>
-              </div>
-            ))}
-          </div>
-          <p><strong>Đã chọn:</strong> {selectedPlaces.join(', ') || 'Chưa có gì'}</p>
-          
-          {/* Nút Quay lại & Tiếp theo */}
-          <button className="btn-back" onClick={() => setStep(4)}>Quay lại</button>
-          <button className="btn-yes" onClick={() => setStep(6)}
-            disabled={selectedPlaces.length === 0}>
-            Tiếp theo</button>
-        </div>
-      )}
-
-      {/* Step 6: Xem lại */}
-      {step === 6 && (
-        <div className="fade-in">
-          <h1>Đơn hàng của công chúa, anh sẽ có mặt trước 15 phút nha</h1>
-          <div className="review-section">
-            <p><strong>Thời gian:</strong> {date ? new Date(date).toLocaleString('vi-VN') : 'Chưa chọn'}</p>
-            <p><strong>Món chính:</strong> {selectedFoods.join(', ') || 'Không ăn'}</p>
-            <p><strong>Điểm tâm:</strong> {selectedSnacks.join(', ') || 'Không ăn'}</p>
-            <p><strong>Giải trí:</strong> {selectedPlaces.join(', ') || 'Ở nhà'}</p>
-          </div>
-          
-          {/* Nút Quay lại & Chốt đơn */}
-          <button className="btn-back" onClick={() => setStep(5)}>Quay lại</button>
-          <button className="btn-yes" onClick={handleFinish}>Chốt đơn</button>
-        </div>
-      )}
-
-      {step === 7 && <h1>Yêu em! Cảm ơn vì da den 🥰</h1>}
-      </div>
-    </>
+    </div>
   );
 }
+
 export default App;

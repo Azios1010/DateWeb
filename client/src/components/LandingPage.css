@@ -1,0 +1,88 @@
+.landing-page {
+  /* 1. Nền Xanh (Gradient cho đẹp & hiện đại) */
+  background: linear-gradient(135deg, #53f4ff 0%, #02204a 100%);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 5;
+  /* Căn giữa toàn bộ nội dung */
+  min-height: 100vh; /* Chiều cao full màn hình */
+  width: 100%;
+  display: flex;
+  flex-direction: column; /* Xếp dọc từ trên xuống */
+  align-items: center;    /* Căn giữa theo chiều ngang */
+  justify-content: center; /* Căn giữa theo chiều dọc */
+  padding: 20px;
+  text-align: center;
+}
+
+/* Tiêu đề */
+.landing-page h1 {
+  color: #fff; /* Chữ trắng cho nổi trên nền xanh */
+  text-shadow: 0 2px 4px rgba(0,0,0,0.2); /* Bóng chữ nhẹ */
+  margin-bottom: 10px;
+  font-size: 2.5rem;
+}
+
+.landing-page p {
+  color: #f0f8ff;
+  margin-bottom: 30px;
+  font-size: 1.1rem;
+}
+
+/* --- Phần Input & Button (3 Hàng) --- */
+
+/* 2. Style cho ô Input */
+.landing-page input {
+  display: block; /* Bắt buộc xuống dòng (tạo thành hàng riêng) */
+  width: 100%;
+  max-width: 320px; /* Giới hạn chiều rộng cho đẹp trên máy tính */
+  margin: 0 auto 15px auto; /* Căn giữa và cách nhau 15px */
+  
+  padding: 15px 20px;
+  border-radius: 50px; /* Bo tròn hình viên thuốc */
+  border: 2px solid transparent;
+  background: rgba(255, 255, 255, 0.9); /* Nền trắng hơi trong suốt */
+  font-size: 16px;
+  outline: none;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1); /* Đổ bóng nhẹ */
+  transition: all 0.3s ease;
+}
+
+/* Hiệu ứng khi bấm vào input */
+.landing-page input:focus {
+  background: #fff;
+  border-color: #fff;
+  transform: scale(1.05); /* Phóng to nhẹ */
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
+
+/* 3. Style cho Nút bấm (Hàng thứ 3) */
+.btn-create {
+  display: block; /* Xuống dòng */
+  width: 100%;
+  max-width: 320px; /* Bằng chiều rộng input */
+  margin: 10px auto;
+  
+  padding: 15px;
+  border-radius: 50px;
+  border: none;
+  background: #ff4b4b; /* Màu đỏ nổi bật trên nền xanh */
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 5px 15px rgba(255, 75, 75, 0.4);
+  transition: transform 0.2s, background 0.2s;
+}
+
+/* Hiệu ứng khi di chuột vào nút */
+.btn-create:hover {
+  background: #ff2e2e;
+  transform: translateY(-3px); /* Nổi lên một chút */
+}
+
+/* Hiệu ứng khi bấm nút */
+.btn-create:active {
+  transform: scale(0.95);
+}
