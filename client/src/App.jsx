@@ -13,7 +13,7 @@ import CoupleHeader from './components/CoupleHeader';
 // Link API (nhớ đổi thành link Render của bạn nếu deploy)
 //const API_URL = 'https://date-require-website.onrender.com/api/couple';
 
-const API_URL = 'http://localhost:3000/api/couple';
+const API_URL = 'https://date-require-website.onrender.com';
 
 function App() {
   const [coupleId, setCoupleId] = useState(null);
